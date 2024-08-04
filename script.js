@@ -8,15 +8,11 @@ function reload() {
 }
 
 async function fetchNews(query) {
-    try {
-        const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+    const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
         const data = await res.json();
         bindData(data.articles);
-    } catch (error) {
-        console.error("Error fetching news:", error);
-    }
-}
-
+    } 
+    
 function bindData(articles) {
     const cardsContainer = document.getElementById("cards-container");
     const newsCardTemplate = document.getElementById("template-news-card");
@@ -68,7 +64,8 @@ const searchText = document.getElementById("search-text");
 
 searchButton.addEventListener("click", () => {
     const query = searchText.value;
-    if (query) {
-        fetchNews(query);
-    }
+    if (!query) return;
+    fetchNews(query);
+    curSelectedNav?.classList.remove("active");
+    curSelectedNav = null;
 });
