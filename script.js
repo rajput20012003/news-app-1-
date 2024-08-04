@@ -8,9 +8,13 @@ function reload() {
 }
 
 async function fetchNews(query) {
-    const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
-    const data = await res.json();
-    bindData(data.articles);
+    try {
+        const res = await fetch(`${url}${query}&apiKey=${API_KEY}`);
+        const data = await res.json();
+        bindData(data.articles);
+    } catch (error) {
+        console.error("Error fetching news:", error);
+    }
 }
 
 function bindData(articles) {
@@ -33,19 +37,21 @@ function fillDataInCard(cardClone, article) {
     const newsSource = cardClone.querySelector("#news-source");
     const newsDesc = cardClone.querySelector("#news-desc");
 
-    newsImg.src = article.urlToImage;
-    newsTitle.innerHTML = article.title;
-    newsDesc.innerHTML = article.description;
+    if (newsImg && newsTitle && newsSource && newsDesc) {
+        newsImg.src = article.urlToImage;
+        newsTitle.innerHTML = article.title;
+        newsDesc.innerHTML = article.description;
 
-    const date = new Date(article.publishedAt).toLocaleString("en-US", {
-        timeZone: "Asia/Jakarta",
-    });
+        const date = new Date(article.publishedAt).toLocaleString("en-US", {
+            timeZone: "Asia/Kolkata",
+        });
 
-    newsSource.innerHTML = `${article.source.name} · ${date}`;
+        newsSource.innerHTML = `${article.source.name} · ${date}`;
 
-    cardClone.querySelector('.card').addEventListener("click", () => {
-        window.open(article.url, "_blank");
-    });
+        cardClone.querySelector('.card').addEventListener("click", () => {
+            window.open(article.url, "_blank");
+        });
+    }
 }
 
 let curSelectedNav = null;
@@ -62,8 +68,7 @@ const searchText = document.getElementById("search-text");
 
 searchButton.addEventListener("click", () => {
     const query = searchText.value;
-    if (!query) return;
-    fetchNews(query);
-    curSelectedNav?.classList.remove("active");
-    curSelectedNav = null;
+    if (query) {
+        fetchNews(query);
+    }
 });
